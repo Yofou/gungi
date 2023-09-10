@@ -9,3 +9,4 @@ COPY package.json .
 RUN yarn install
 COPY . .
 RUN yarn build
+CMD [ "node","build" ]
