@@ -22,10 +22,10 @@ export const piece_data: Record<
     cannon: { amount: 2, levels: 3 },
     spy: { amount: 2, levels: 3 },
     pawn: { amount: 9, levels: 3 },
-    marshall: {
+    marshal: {
         amount: 1,
         levels: 1,
-        display_name: 'Marshall (King)',
+        display_name: 'Marshal (King)',
         note: 'The Marshal moves the same for all tiers. Pieces cannot be stacked on the Marshal.'
     }
 };

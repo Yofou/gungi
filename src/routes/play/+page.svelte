@@ -1,7 +1,7 @@
 <main
 	class="bg-lime-800 min-w-screen min-h-screen text-white font-primaryfont flex flex-col justify-center items-center gap-y-5"
 >
-	<div class="flex gap-y-5 container justify-between">
+	<div class="flex gap-y-5 w-full desktop:px-24 justify-between">
 		<div class="grid grid-cols-9">
 			{#each { length: 81 } as _, i}
 				<div
@@ -12,13 +12,20 @@
 		</div>
 		<div class="flex flex-col gap-y-6">
 			<h2 class="font-bold text-4xl">Game Phase</h2>
-			<div class="flex flex-col justify-between rounded-full bg-lime-950 text-white py-3 px-5">
+			<div class="flex flex-col justify-between rounded-3xl bg-lime-950 text-white py-5 px-8">
 				<h4>Tower details</h4>
 			</div>
 			{#each player_data as player}
-				<div class="flex flex-col justify-between rounded-full bg-lime-950 text-white py-3 px-5">
+				<div class="flex flex-col justify-between rounded-3xl bg-lime-950 text-white py-5 px-8">
 					<div class="flex justify-between" >
 						<h4>{player.name}'s stockpile</h4>
+					</div>
+					<div class="grid grid-cols-10 gap-4" >
+						{#each Object.entries(player.piece_data) as [piece_name, piece]}
+							<div class="h-12 aspect-square" >
+								<img class="h-12" src="/img/{player.color}-{piece_name}-1.svg" alt="{player.color}-{piece_name}-1" />
+							</div>
+						{/each}
 					</div>
 				</div>
 			{/each}
@@ -32,10 +39,12 @@
 	const player_data = [
 		{
 			name: 'Player 1',
+			color: 'white',
 			piece_data: structuredClone(piece_data)
 		},
 		{
 			name: 'Player 2',
+			color: 'black',
 			piece_data: structuredClone(piece_data)
 		}
 	];
