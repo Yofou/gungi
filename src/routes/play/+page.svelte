@@ -16,14 +16,20 @@
 				<h4>Tower details</h4>
 			</div>
 			{#each player_data as player}
-				<div class="flex flex-col justify-between rounded-3xl gap-y-5 bg-lime-950 text-white py-5 px-8">
-					<div class="flex justify-between" >
+				<div
+					class="flex flex-col justify-between rounded-3xl gap-y-5 bg-lime-950 text-white py-5 px-8"
+				>
+					<div class="flex justify-between">
 						<h4>{player.name}'s stockpile</h4>
 					</div>
-					<div class="grid grid-cols-10 gap-4" >
+					<div class="grid grid-cols-10 gap-4">
 						{#each Object.entries(player.piece_data) as [piece_name, piece]}
-							<div class="h-12 aspect-square cursor-pointer" >
-								<img class="h-12" src="/img/{player.color}-{piece_name}-1.svg" alt="{player.color}-{piece_name}-1" />
+							<div class="h-12 aspect-square cursor-pointer">
+								<img
+									class="h-12"
+									src="/img/{player.color}-{piece_name}-1.svg"
+									alt="{player.color}-{piece_name}-1"
+								/>
 							</div>
 						{/each}
 					</div>
@@ -35,6 +41,26 @@
 
 <script lang="ts">
 	import { piece_data } from '$lib/pieces';
+
+	type BoardPiece = {
+		color: 'white' | 'black';
+		piece_type:
+			| 'marshal'
+			| 'knight'
+			| 'pawn'
+			| 'general'
+			| 'spy'
+			| 'archer'
+			| 'cannon'
+			| 'samurai'
+			| 'musketeer'
+			| 'lieutenantgeneral'
+			| 'majorgeneral'
+			| 'captain'
+			| 'fortress';
+	};
+
+	const board_state: BoardPiece[][] = new Array(81).fill([]);
 
 	const player_data = [
 		{
