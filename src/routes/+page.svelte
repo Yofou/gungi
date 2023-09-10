@@ -14,6 +14,6 @@
 
 <style lang="postcss" >
     .round_button {
-        @apply text-lime-800 bg-white px-8 py-2 rounded-full;
+        @apply text-lime-800 bg-white px-8 py-2 rounded-full hover:text-white hover:bg-lime-950;
     }
 </style>
