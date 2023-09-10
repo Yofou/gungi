@@ -24,12 +24,15 @@
 					</div>
 					<div class="grid grid-cols-10 gap-4">
 						{#each Object.entries(player.piece_data) as [piece_name, piece]}
-							<div class="h-12 aspect-square cursor-pointer">
+							<div class="h-12 aspect-square cursor-pointer relative">
 								<img
-									class="h-12"
+									class="h-12 block"
 									src="/img/{player.color}-{piece_name}-1.svg"
 									alt="{player.color}-{piece_name}-1"
 								/>
+								<div class="rounded-full h-7 bg-blue-950 aspect-square flex justify-center items-center absolute -top-3 -right-3" >
+									{piece.amount}
+								</div>
 							</div>
 						{/each}
 					</div>
