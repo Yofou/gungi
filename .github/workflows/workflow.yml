@@ -1,0 +1,39 @@
+on:
+   push:
+      branches:
+         - main	 
+   workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: write
+
+name: 🚀 Deploy website on push
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v3
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1 
+      with:
+        role-to-assume: arn:aws:iam::567364279564:role/GithubECRRole #OIDC IAM Role
+        aws-region: us-east-1
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: make ENV variables
+      run : |
+        touch .env
+        echo "${{secrets.ENV_FILE}}" > .env
+
+      
+    - name: 🔨 Build Images and Deploy
+      run: |
+        docker build . -t 567364279564.dkr.ecr.us-east-1.amazonaws.com/gungi
+        docker push 567364279564.dkr.ecr.us-east-1.amazonaws.com/gungi
