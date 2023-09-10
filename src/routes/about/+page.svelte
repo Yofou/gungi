@@ -1,5 +1,5 @@
 <main
-	class="bg-lime-800 min-w-screen min-h-screen text-white font-primaryfont flex flex-col justify-center items-center gap-y-5"
+	class="bg-lime-800 min-w-screen min-h-screen text-white font-primaryfont pt-16 flex flex-col justify-center items-center gap-y-5"
 >
 	<div class="flex flex-col gap-y-5 container">
 		<h1>What is Gungi?</h1>
