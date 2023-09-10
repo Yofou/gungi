@@ -9,4 +9,6 @@ COPY package.json .
 RUN yarn install
 COPY . .
 RUN yarn build
+ENV ORIGIN=https://gungi.net
+ENV PORT=80
 CMD [ "node","build" ]

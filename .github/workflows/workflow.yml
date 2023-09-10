@@ -37,3 +37,7 @@ jobs:
       run: |
         docker build . -t 567364279564.dkr.ecr.us-east-1.amazonaws.com/gungi
         docker push 567364279564.dkr.ecr.us-east-1.amazonaws.com/gungi
+
+    - name: ECS Deploy
+      run: |
+        aws ecs update-service --cluster GAMES_CLUSTER --service GUNGI --force-new-deployment --region us-east-1
