@@ -27,7 +27,8 @@
 						use:dndzone={{
 							items: Object.values(player.piece_data),
 							type: `stockpile_pieces_${i}`,
-							dropFromOthersDisabled: true
+							dropFromOthersDisabled: true,
+							dropTargetClasses: ['!outline-none']
 						}}
 						on:consider={(e) => handleDndConsider(e, i)}
 					>
