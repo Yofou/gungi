@@ -4,16 +4,15 @@
 	<div
 		class="flex flex-col laptop:flex-row gap-y-5 gap-x-6 laptop:gap-x-12 w-full justify-around items-center px-3 tablet:px-8 laptop:px-12"
 	>
-		<div
-			class="grid grid-cols-9 h-fit w-full tablet:w-[unset]"
-			use:dndzone={{ items: board_state, dragDisabled: true, dropTargetClasses: ['!outline-none'] }}
-			on:finalize={(e) => (board_state = handleGameMove(e, board_state))}
-		>
+		<div class="grid grid-cols-9 h-fit w-full tablet:w-[unset]">
 			{#each board_state as square, i}
 				{@const top_piece = square.pieces?.[0]}
 				<div
+					role="application"
 					class="bg-[#eecaa0] border-[#bc7e38] border-t tablet:border-t-2 border-r p-1.5 tablet:border-r-2 border-solid tablet:w-16 laptop:w-20 desktop:w-24 aspect-square
 					{i % 9 === 0 && 'border-l tablet:border-l-2'} {i >= 72 && 'border-b tablet:border-b-2'}"
+					on:drop={(e) => (square = dropPieceOnBoard(e, square))}
+					on:dragover={(e) => e.preventDefault()}
 				>
 					{#if top_piece}
 						<img
@@ -46,12 +45,6 @@
 					</div>
 					<div
 						class="grid grid-cols-3 tablet:grid-cols-7 laptop:grid-cols-6 desktop:grid-cols-8 gap-4"
-						use:dndzone={{
-							items: Object.values(player.piece_data),
-							dropFromOthersDisabled: true,
-							dropTargetClasses: ['!outline-none']
-						}}
-						on:consider={(e) => (player_data[i] = handleStockpileDnDConsider(e, player_data[i]))}
 					>
 						{#each player.piece_data as piece (piece.id)}
 							{@const piece_slug_name = piece.display_name.toLowerCase().replaceAll(' ', '')}
@@ -60,6 +53,17 @@
 									class="block"
 									draggable="true"
 									src="/img/{player.color}-{piece_slug_name}-1.svg"
+									on:dragstart={(e) => {
+										const { piece: data_of_piece, element } = stockpileDragStart(e, piece, i);
+										draggedStockpilePiece = data_of_piece;
+										draggedStockpilePieceElement?.appendChild(element);
+									}}
+									on:drag={pieceTrackMouse}
+									on:dragend={() => {
+										if (draggedStockpilePieceElement?.firstChild) {
+											draggedStockpilePieceElement?.removeChild(draggedStockpilePieceElement?.firstChild)
+										}
+									}}
 									alt="{player.color}-{piece_slug_name}-1"
 								/>
 								<div
@@ -74,6 +78,7 @@
 			{/each}
 		</div>
 	</div>
+	<div bind:this={draggedStockpilePieceElement} />
 </main>
 
 <script lang="ts">
@@ -97,11 +102,30 @@
 			piece_data: structuredClone(piece_data)
 		}
 	];
+
+	let draggedStockpilePiece: Piece | null = null;
+	let draggedStockpilePieceElement: HTMLElement | null = null;
+
+	function pieceTrackMouse(e: DragEvent) {
+		const element = draggedStockpilePieceElement!;
+		element.classList.add('dragged_ghost');
+		element.style.left = `${e.clientX}px`;
+		element.style.top = `${e.clientY}px`;
+		// const { img_element }: DragData = JSON.parse(e.dataTransfer?.getData("application/json") ?? '');
+		// console.log(img_element)
+	}
 </script>
 
 <style lang="postcss">
 	h4 {
 		@apply text-xl font-semibold;
+	}
+
+	.dragged_ghost {
+		@apply absolute pointer-events-none;
+		& > img {
+			@apply h-12 laptop:h-14;
+		}
 	}
 
 	:global(#dnd-action-dragged-el > .number_img) {
