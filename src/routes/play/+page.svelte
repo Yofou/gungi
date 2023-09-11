@@ -1,7 +1,7 @@
 <main
 	class="bg-lime-800 min-w-screen min-h-screen text-white pt-12 tablet:pt-20 font-primaryfont flex flex-col justify-center items-center gap-y-5"
 >
-	<div class="flex flex-col laptop:flex-row gap-y-5 gap-x-6 laptop:gap-x-12 w-full justify-around items-center px-3 tablet:px-8 laptop:px-20">
+	<div class="flex flex-col laptop:flex-row gap-y-5 gap-x-6 laptop:gap-x-12 w-full justify-around items-center px-3 tablet:px-8 laptop:px-12">
 		<div class="grid grid-cols-9 h-fit w-full tablet:w-[unset]" use:dndzone={{ items: [] }}>
 			{#each { length: 81 } as _, i}
 				<div
@@ -34,9 +34,9 @@
 					>
 						{#each player.piece_data as piece (piece.id)}
 							{@const piece_slug_name = piece.display_name.toLowerCase().replaceAll(' ', '')}
-							<div class="h-12 aspect-square cursor-pointer relative">
+							<div class="h-12 laptop:h-14 aspect-square cursor-pointer relative">
 								<img
-									class="h-12 block"
+									class="block"
 									draggable="true"
 									src="/img/{player.color}-{piece_slug_name}-1.svg"
 									alt="{player.color}-{piece_slug_name}-1"
