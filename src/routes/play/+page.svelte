@@ -4,7 +4,10 @@
 	<div
 		class="flex flex-col laptop:flex-row gap-y-5 gap-x-6 laptop:gap-x-12 w-full justify-around items-center px-3 tablet:px-8 laptop:px-12"
 	>
-		<div class="grid grid-cols-9 h-fit w-full tablet:w-[unset]" use:dndzone={{ items: board_state }}>
+		<div class="grid grid-cols-9 h-fit w-full tablet:w-[unset]" 
+		use:dndzone={{ items: board_state }}
+		on:finalize={(e) => handleGameMove(e)}
+		>
 			{#each board_state as square, i}
 				{@const top_piece = square.pieces?.at(-1)}
 				<div
@@ -48,7 +51,7 @@
 							dropFromOthersDisabled: true,
 							dropTargetClasses: ['!outline-none']
 						}}
-						on:consider={(e) => handleDndConsider(e, i)}
+						on:consider={(e) => player_data[i] = handleStockpileDnDConsider(e,player_data[i])}
 					>
 						{#each player.piece_data as piece (piece.id)}
 							{@const piece_slug_name = piece.display_name.toLowerCase().replaceAll(' ', '')}
@@ -76,6 +79,7 @@
 <script lang="ts">
 	import { dndzone, TRIGGERS, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
 	import { piece_data, type Piece } from '$lib/pieces';
+	import { handleGameMove, handleStockpileDnDConsider } from '$lib/game';
 
 	type BoardPiece = {
 		color: 'white' | 'black';
@@ -109,27 +113,6 @@
 			piece_data: structuredClone(piece_data)
 		}
 	];
-
-	let shouldIgnoreDndEvents = false;
-	function handleDndConsider(e: CustomEvent, player_number: number) {
-		const { trigger, id } = e.detail.info;
-		const items = player_data[player_number].piece_data;
-		if (trigger === TRIGGERS.DRAG_STARTED) {
-			const idx = items.findIndex((item) => item.id === id);
-			const newId = `${id}_copy_${Math.round(Math.random() * 100000)}`;
-			// the line below was added in order to be compatible with version svelte-dnd-action 0.7.4 and above
-			e.detail.items = e.detail.items.filter(
-				(item: Piece) => !item[SHADOW_ITEM_MARKER_PROPERTY_NAME as keyof Piece]
-			);
-			e.detail.items.splice(idx, 0, { ...items[idx], id: newId });
-			player_data[player_number].piece_data = e.detail.items;
-			shouldIgnoreDndEvents = true;
-		} else if (!shouldIgnoreDndEvents) {
-			player_data[player_number].piece_data = e.detail.items;
-		} else {
-			player_data[player_number].piece_data = [...items];
-		}
-	}
 </script>
 
 <style lang="postcss">
