@@ -1,16 +1,34 @@
 <main
 	class="bg-lime-800 min-w-screen min-h-screen text-white pt-12 tablet:pt-20 font-primaryfont flex flex-col justify-center items-center gap-y-5"
 >
-	<div class="flex flex-col laptop:flex-row gap-y-5 gap-x-6 laptop:gap-x-12 w-full justify-around items-center px-3 tablet:px-8 laptop:px-12">
+	<div
+		class="flex flex-col laptop:flex-row gap-y-5 gap-x-6 laptop:gap-x-12 w-full justify-around items-center px-3 tablet:px-8 laptop:px-12"
+	>
 		<div class="grid grid-cols-9 h-fit w-full tablet:w-[unset]" use:dndzone={{ items: [] }}>
-			{#each { length: 81 } as _, i}
+			{#each board_state as square, i}
+				{@const top_piece = square.pieces?.at(-1)}
 				<div
 					class="bg-[#eecaa0] border-[#bc7e38] border-t tablet:border-t-2 border-r tablet:border-r-2 border-solid tablet:w-16 laptop:w-20 desktop:w-24 aspect-square
 					{i % 9 === 0 && 'border-l tablet:border-l-2'} {i >= 72 && 'border-b tablet:border-b-2'}"
-				/>
+				>
+					{#if top_piece}
+						<img
+							class="block"
+							draggable="true"
+							src="/img/{top_piece?.color}-{top_piece?.piece_type}-1.svg"
+							alt="{top_piece?.color}-{top_piece?.piece_type}-1"
+						/>
+						<div
+							class:hidden={square.pieces.length === 0}
+							class="rounded-full number_img h-7 bg-blue-950 aspect-square flex justify-center items-center absolute -top-3 -right-3"
+						>
+							{square.pieces.length}
+						</div>
+					{/if}
+				</div>
 			{/each}
 		</div>
-		<div class="flex flex-col gap-y-6" >
+		<div class="flex flex-col gap-y-6">
 			<h2 class="font-bold text-4xl">Game Phase</h2>
 			<div class="flex flex-col justify-between rounded-3xl bg-lime-950 text-white py-5 px-8">
 				<h4>Tower details</h4>
@@ -77,7 +95,7 @@
 			| 'fortress';
 	};
 
-	const board_state: BoardPiece[][] = new Array(81).fill([]);
+	const board_state: { id: number; pieces: BoardPiece[] }[] = new Array(81).fill([]);
 
 	const player_data = [
 		{
@@ -97,28 +115,28 @@
 		const { trigger, id } = e.detail.info;
 		const items = player_data[player_number].piece_data;
 		if (trigger === TRIGGERS.DRAG_STARTED) {
-		    const idx = items.findIndex(item => item.id === id);
-		    const newId = `${id}_copy_${Math.round(Math.random()*100000)}`;
+			const idx = items.findIndex((item) => item.id === id);
+			const newId = `${id}_copy_${Math.round(Math.random() * 100000)}`;
 			// the line below was added in order to be compatible with version svelte-dnd-action 0.7.4 and above
-			e.detail.items = e.detail.items.filter((item: Piece) => !item[SHADOW_ITEM_MARKER_PROPERTY_NAME as keyof Piece]);
-		    e.detail.items.splice(idx, 0, {...items[idx], id: newId});
-		    player_data[player_number].piece_data = e.detail.items;
-		    shouldIgnoreDndEvents = true;
-		}
-		else if (!shouldIgnoreDndEvents) {
-		    player_data[player_number].piece_data = e.detail.items;
-		}
-		else {
-		    player_data[player_number].piece_data = [...items];
+			e.detail.items = e.detail.items.filter(
+				(item: Piece) => !item[SHADOW_ITEM_MARKER_PROPERTY_NAME as keyof Piece]
+			);
+			e.detail.items.splice(idx, 0, { ...items[idx], id: newId });
+			player_data[player_number].piece_data = e.detail.items;
+			shouldIgnoreDndEvents = true;
+		} else if (!shouldIgnoreDndEvents) {
+			player_data[player_number].piece_data = e.detail.items;
+		} else {
+			player_data[player_number].piece_data = [...items];
 		}
 	}
 </script>
 
-<style lang="postcss" >
+<style lang="postcss">
 	h4 {
 		@apply text-xl font-semibold;
 	}
-	
+
 	:global(#dnd-action-dragged-el > .number_img) {
 		@apply hidden;
 	}
