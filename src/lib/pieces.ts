@@ -18,6 +18,8 @@ export type BoardPiece = {
         | 'fortress'
 };
 
+export type BoardSquare = { id: number; pieces: Array<BoardPiece> }
+
 export const piece_data: Piece[] = [
     { id: 1, amount: 4, levels: 3, display_name: 'Major General' },
     { id: 2, amount: 4, levels: 3, display_name: 'Lieutenant General' },

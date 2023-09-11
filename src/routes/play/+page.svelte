@@ -4,14 +4,15 @@
 	<div
 		class="flex flex-col laptop:flex-row gap-y-5 gap-x-6 laptop:gap-x-12 w-full justify-around items-center px-3 tablet:px-8 laptop:px-12"
 	>
-		<div class="grid grid-cols-9 h-fit w-full tablet:w-[unset]" 
-		use:dndzone={{ items: board_state, dragDisabled: true }}
-		on:finalize={(e) => board_state = handleGameMove(e)}
+		<div
+			class="grid grid-cols-9 h-fit w-full tablet:w-[unset]"
+			use:dndzone={{ items: board_state, dragDisabled: true }}
+			on:finalize={(e) => (board_state = handleGameMove(e, board_state))}
 		>
 			{#each board_state as square, i}
-				{@const top_piece = square.pieces?.at(-1)}
+				{@const top_piece = square.pieces?.[0]}
 				<div
-					class="bg-[#eecaa0] border-[#bc7e38] border-t tablet:border-t-2 border-r tablet:border-r-2 border-solid tablet:w-16 laptop:w-20 desktop:w-24 aspect-square
+					class="bg-[#eecaa0] border-[#bc7e38] border-t tablet:border-t-2 border-r p-1.5 tablet:border-r-2 border-solid tablet:w-16 laptop:w-20 desktop:w-24 aspect-square
 					{i % 9 === 0 && 'border-l tablet:border-l-2'} {i >= 72 && 'border-b tablet:border-b-2'}"
 				>
 					{#if top_piece}
@@ -50,7 +51,7 @@
 							dropFromOthersDisabled: true,
 							dropTargetClasses: ['!outline-none']
 						}}
-						on:consider={(e) => player_data[i] = handleStockpileDnDConsider(e,player_data[i])}
+						on:consider={(e) => (player_data[i] = handleStockpileDnDConsider(e, player_data[i]))}
 					>
 						{#each player.piece_data as piece (piece.id)}
 							{@const piece_slug_name = piece.display_name.toLowerCase().replaceAll(' ', '')}
@@ -77,10 +78,12 @@
 
 <script lang="ts">
 	import { dndzone } from 'svelte-dnd-action';
-	import { piece_data, type Piece, type BoardPiece } from '$lib/pieces';
+	import { piece_data, type BoardSquare } from '$lib/pieces';
 	import { handleGameMove, handleStockpileDnDConsider } from '$lib/game';
 
-	let board_state: { id: number; pieces: Array<BoardPiece> }[] = Array.from({length: 81}, (_, i) => { return {id: i,pieces: []} })
+	let board_state: BoardSquare[] = Array.from({ length: 81 }, (_, i) => {
+		return { id: i, pieces: [] };
+	});
 
 	const player_data = [
 		{
