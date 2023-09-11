@@ -4,7 +4,7 @@
 	<div
 		class="flex flex-col laptop:flex-row gap-y-5 gap-x-6 laptop:gap-x-12 w-full justify-around items-center px-3 tablet:px-8 laptop:px-12"
 	>
-		<div class="grid grid-cols-9 h-fit w-full tablet:w-[unset]" use:dndzone={{ items: [] }}>
+		<div class="grid grid-cols-9 h-fit w-full tablet:w-[unset]" use:dndzone={{ items: board_state }}>
 			{#each board_state as square, i}
 				{@const top_piece = square.pieces?.at(-1)}
 				<div
@@ -80,7 +80,7 @@
 	type BoardPiece = {
 		color: 'white' | 'black';
 		piece_type:
-			| 'marshal'
+			| 'marshal(king)'
 			| 'knight'
 			| 'pawn'
 			| 'general'
@@ -92,10 +92,10 @@
 			| 'lieutenantgeneral'
 			| 'majorgeneral'
 			| 'captain'
-			| 'fortress';
+			| 'fortress'
 	};
 
-	const board_state: { id: number; pieces: BoardPiece[] }[] = new Array(81).fill([]);
+	const board_state: { id: number; pieces: Array<BoardPiece> }[] = Array.from({length: 81}, (_, i) => { return {id: i,pieces: []} })
 
 	const player_data = [
 		{
