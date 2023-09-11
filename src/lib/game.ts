@@ -8,10 +8,11 @@ export type PlayerData = {
 
 export type DragData = {piece: Piece, color: 'black' | 'white'}
 
-export function stockpileDragStart(e: DragEvent,piece: Piece,player_number: number): {piece: Piece, element: HTMLElement} {
+export function stockpileDragStart(e: DragEvent,piece: Piece,player_number: number): {piece: Piece, element: HTMLElement, diffX: number, diffY: number} {
     const element = (e.target as HTMLElement).cloneNode(true) as HTMLElement;
+    const { left,top } = (e.target as HTMLElement).getBoundingClientRect();
     e.dataTransfer?.setData("application/json", JSON.stringify({piece , color: player_number === 0 ? 'white' : 'black'}));
-    return { piece, element};
+    return { piece, element, diffX: e.clientX - left , diffY: e.clientY - top };
 }
 
 export function dropPieceOnBoard(e: DragEvent,square: BoardSquare): BoardSquare {

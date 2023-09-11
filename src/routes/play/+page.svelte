@@ -54,9 +54,11 @@
 									draggable="true"
 									src="/img/{player.color}-{piece_slug_name}-1.svg"
 									on:dragstart={(e) => {
-										const { piece: data_of_piece, element } = stockpileDragStart(e, piece, i);
+										const { piece: data_of_piece, element,diffX,diffY } = stockpileDragStart(e, piece, i);
 										draggedStockpilePiece = data_of_piece;
 										draggedStockpilePieceElement?.appendChild(element);
+										dragged_diff_x = diffX;
+										dragged_diff_y = diffY;
 									}}
 									on:drag={pieceTrackMouse}
 									on:dragend={() => {
@@ -104,12 +106,14 @@
 
 	let draggedStockpilePiece: Piece | null = null;
 	let draggedStockpilePieceElement: HTMLElement | null = null;
+	let dragged_diff_x: number | null;
+	let dragged_diff_y: number | null;
 
 	function pieceTrackMouse(e: DragEvent) {
 		const element = draggedStockpilePieceElement!;
 		element.classList.add('dragged_ghost');
-		element.style.left = `${e.clientX}px`;
-		element.style.top = `${e.clientY}px`;
+		element.style.left = `${e.clientX - dragged_diff_x!}px`;
+		element.style.top = `${e.clientY - dragged_diff_y!}px`;
 		// const { img_element }: DragData = JSON.parse(e.dataTransfer?.getData("application/json") ?? '');
 		// console.log(img_element)
 	}
