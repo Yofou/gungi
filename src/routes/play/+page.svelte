@@ -30,7 +30,6 @@
 							dropFromOthersDisabled: true
 						}}
 						on:consider={(e) => handleDndConsider(e, i)}
-						on:finalize={(e) => handleDndFinalize(e, i)}
 					>
 						{#each player.piece_data as piece (piece.id)}
 							{@const piece_slug_name = piece.display_name.toLowerCase().replaceAll(' ', '')}
@@ -42,7 +41,7 @@
 									alt="{player.color}-{piece_slug_name}-1"
 								/>
 								<div
-									class="rounded-full h-7 bg-blue-950 aspect-square flex justify-center items-center absolute -top-3 -right-3"
+									class="rounded-full number_img h-7 bg-blue-950 aspect-square flex justify-center items-center absolute -top-3 -right-3"
 								>
 									{piece.amount}
 								</div>
@@ -57,7 +56,7 @@
 
 <script lang="ts">
 	import { dndzone, TRIGGERS, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
-	import { piece_data } from '$lib/pieces';
+	import { piece_data, type Piece } from '$lib/pieces';
 
 	type BoardPiece = {
 		color: 'white' | 'black';
@@ -94,38 +93,32 @@
 
 	let shouldIgnoreDndEvents = false;
 	function handleDndConsider(e: CustomEvent, player_number: number) {
-		console.warn(`got consider ${JSON.stringify(e.detail, null, 2)}`);
 		const { trigger, id } = e.detail.info;
-		// if (trigger === TRIGGERS.DRAG_STARTED) {
-		//     const idx = items.findIndex(item => item.id === id);
-		//     const newId = `${id}_copy_${Math.round(Math.random()*100000)}`;
-		// 	// the line below was added in order to be compatible with version svelte-dnd-action 0.7.4 and above
-		// 	e.detail.items = e.detail.items.filter(item => !item[SHADOW_ITEM_MARKER_PROPERTY_NAME]);
-		//     e.detail.items.splice(idx, 0, {...items[idx], id: newId});
-		//     items = e.detail.items;
-		//     shouldIgnoreDndEvents = true;
-		// }
-		// else if (!shouldIgnoreDndEvents) {
-		//     items = e.detail.items;
-		// }
-		// else {
-		//     items = [...items];
-		// }
-	}
-	function handleDndFinalize(e: CustomEvent) {
-		console.warn(`got finalize ${JSON.stringify(e.detail, null, 2)}`);
-		// if (!shouldIgnoreDndEvents) {
-		//     items = e.detail.items;
-		// }
-		// else {
-		//     items = [...items];
-		//     shouldIgnoreDndEvents = false;
-		// }
+		const items = player_data[player_number].piece_data;
+		if (trigger === TRIGGERS.DRAG_STARTED) {
+		    const idx = items.findIndex(item => item.id === id);
+		    const newId = `${id}_copy_${Math.round(Math.random()*100000)}`;
+			// the line below was added in order to be compatible with version svelte-dnd-action 0.7.4 and above
+			e.detail.items = e.detail.items.filter((item: Piece) => !item[SHADOW_ITEM_MARKER_PROPERTY_NAME as keyof Piece]);
+		    e.detail.items.splice(idx, 0, {...items[idx], id: newId});
+		    player_data[player_number].piece_data = e.detail.items;
+		    shouldIgnoreDndEvents = true;
+		}
+		else if (!shouldIgnoreDndEvents) {
+		    player_data[player_number].piece_data = e.detail.items;
+		}
+		else {
+		    player_data[player_number].piece_data = [...items];
+		}
 	}
 </script>
 
-<style lang="postcss">
+<style lang="postcss" >
 	h4 {
 		@apply text-xl font-semibold;
+	}
+	
+	:global(#dnd-action-dragged-el > .number_img) {
+		@apply hidden;
 	}
 </style>
