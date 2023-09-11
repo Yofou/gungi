@@ -24,11 +24,12 @@
 		</p>
 	</div>
 	<div class="flex flex-col gap-y-12 container">
-		{#each Object.entries(piece_data) as [piece_name, piece]}
+		{#each piece_data as piece}
+			{@const piece_slug_name = piece.display_name.toLowerCase().replaceAll(' ','')}
 			<div class="flex flex-col gap-y-5 bg-lime-900 p-8 rounded-3xl">
 				<div class="flex justify-between w-full">
 					<h4 class="capitalize text-xl font-semibold">
-						{piece?.display_name ?? piece_name}
+						{piece.display_name}
 						<span class="normal-case">x{piece.amount}</span>
 					</h4>
 					{#if piece.note}
@@ -39,9 +40,9 @@
 					{#each { length: 3 } as _, i}
 						{#if i + 1 <= piece.levels}
 							<img
-								src="/img/board/{piece_name}{i + 1}.svg"
+								src="/img/board/{piece_slug_name}{i + 1}.svg"
 								class="max-h-60"
-								alt="{piece_name}{i + 1}"
+								alt="{piece_slug_name}{i + 1}"
 							/>
 						{/if}
 					{/each}

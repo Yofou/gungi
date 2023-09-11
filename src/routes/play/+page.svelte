@@ -29,16 +29,17 @@
 							type: `stockpile_pieces_${i}`,
 							dropFromOthersDisabled: true
 						}}
-						on:consider={(e) => handleDrag(e,i)}
-						on:finalize={(e) => handleDrag(e,i)}
+						on:consider={(e) => handleDndConsider(e, i)}
+						on:finalize={(e) => handleDndFinalize(e, i)}
 					>
-						{#each Object.entries(player.piece_data) as [piece_name, piece] (piece.id)}
+						{#each player.piece_data as piece (piece.id)}
+							{@const piece_slug_name = piece.display_name.toLowerCase().replaceAll(' ', '')}
 							<div class="h-12 aspect-square cursor-pointer relative">
 								<img
 									class="h-12 block"
 									draggable="true"
-									src="/img/{player.color}-{piece_name}-1.svg"
-									alt="{player.color}-{piece_name}-1"
+									src="/img/{player.color}-{piece_slug_name}-1.svg"
+									alt="{player.color}-{piece_slug_name}-1"
 								/>
 								<div
 									class="rounded-full h-7 bg-blue-950 aspect-square flex justify-center items-center absolute -top-3 -right-3"
@@ -55,7 +56,7 @@
 </main>
 
 <script lang="ts">
-	import { dndzone } from 'svelte-dnd-action';
+	import { dndzone, TRIGGERS, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
 	import { piece_data } from '$lib/pieces';
 
 	type BoardPiece = {
@@ -90,14 +91,36 @@
 			piece_data: structuredClone(piece_data)
 		}
 	];
-	
-	function handleDrag(e: CustomEvent,player_number: number) {
-		const keys = Object.keys(player_data[player_number].piece_data);
-		for (let i = 0; i < keys.length; i++ ) {
-			const key = keys[i]
-			player_data[player_number].piece_data[key] = e.detail.items[i];
-		}
-		console.log(player_data)
+
+	let shouldIgnoreDndEvents = false;
+	function handleDndConsider(e: CustomEvent, player_number: number) {
+		console.warn(`got consider ${JSON.stringify(e.detail, null, 2)}`);
+		const { trigger, id } = e.detail.info;
+		// if (trigger === TRIGGERS.DRAG_STARTED) {
+		//     const idx = items.findIndex(item => item.id === id);
+		//     const newId = `${id}_copy_${Math.round(Math.random()*100000)}`;
+		// 	// the line below was added in order to be compatible with version svelte-dnd-action 0.7.4 and above
+		// 	e.detail.items = e.detail.items.filter(item => !item[SHADOW_ITEM_MARKER_PROPERTY_NAME]);
+		//     e.detail.items.splice(idx, 0, {...items[idx], id: newId});
+		//     items = e.detail.items;
+		//     shouldIgnoreDndEvents = true;
+		// }
+		// else if (!shouldIgnoreDndEvents) {
+		//     items = e.detail.items;
+		// }
+		// else {
+		//     items = [...items];
+		// }
+	}
+	function handleDndFinalize(e: CustomEvent) {
+		console.warn(`got finalize ${JSON.stringify(e.detail, null, 2)}`);
+		// if (!shouldIgnoreDndEvents) {
+		//     items = e.detail.items;
+		// }
+		// else {
+		//     items = [...items];
+		//     shouldIgnoreDndEvents = false;
+		// }
 	}
 </script>
 
