@@ -6,14 +6,15 @@
 	>
 		<div
 			class="grid grid-cols-9 h-fit w-full tablet:w-[unset]"
-			use:dndzone={{ items: board_state, dragDisabled: true, dropTargetClasses: ['!outline-none'] }}
-			on:finalize={(e) => (board_state = handleGameMove(e, board_state))}
 		>
 			{#each board_state as square, i}
 				{@const top_piece = square.pieces?.[0]}
 				<div
+					role="application"
 					class="bg-[#eecaa0] border-[#bc7e38] border-t tablet:border-t-2 border-r p-1.5 tablet:border-r-2 border-solid tablet:w-16 laptop:w-20 desktop:w-24 aspect-square
 					{i % 9 === 0 && 'border-l tablet:border-l-2'} {i >= 72 && 'border-b tablet:border-b-2'}"
+					on:drop={(e) => square = dropPieceOnBoard(e,square)}
+					on:dragover={(e) => e.preventDefault()}
 				>
 					{#if top_piece}
 						<img
@@ -46,20 +47,15 @@
 					</div>
 					<div
 						class="grid grid-cols-3 tablet:grid-cols-7 laptop:grid-cols-6 desktop:grid-cols-8 gap-4"
-						use:dndzone={{
-							items: Object.values(player.piece_data),
-							dropFromOthersDisabled: true,
-							dropTargetClasses: ['!outline-none']
-						}}
-						on:consider={(e) => (player_data[i] = handleStockpileDnDConsider(e, player_data[i]))}
 					>
 						{#each player.piece_data as piece (piece.id)}
 							{@const piece_slug_name = piece.display_name.toLowerCase().replaceAll(' ', '')}
-							<div class="h-12 laptop:h-14 aspect-square cursor-pointer relative">
+							<div class="h-12 laptop:h-14 aspect-square cursor-pointer relative" >
 								<img
 									class="block"
 									draggable="true"
 									src="/img/{player.color}-{piece_slug_name}-1.svg"
+									on:dragstart={(e) => draggedStockpilePiece = stockpileDragStart(e,piece,i)}
 									alt="{player.color}-{piece_slug_name}-1"
 								/>
 								<div
@@ -77,9 +73,7 @@
 </main>
 
 <script lang="ts">
-	import { dndzone } from 'svelte-dnd-action';
-	import { piece_data, type BoardSquare } from '$lib/pieces';
-	import { handleGameMove, handleStockpileDnDConsider } from '$lib/game';
+	import { piece_data, type BoardSquare, type Piece, type BoardPiece } from '$lib/pieces';
 
 	let board_state: BoardSquare[] = Array.from({ length: 81 }, (_, i) => {
 		return { id: i, pieces: [] };
@@ -97,6 +91,21 @@
 			piece_data: structuredClone(piece_data)
 		}
 	];
+
+	
+	let draggedStockpilePiece: Piece | null = null;
+	function stockpileDragStart(e: DragEvent,piece: Piece,player_number: number): Piece {
+		const element = e.target as HTMLElement;
+		e.dataTransfer?.setData("application/json", JSON.stringify({piece , color: player_number === 0 ? 'white' : 'black'}));
+		console.log(piece)
+		return piece;
+	}
+
+	function dropPieceOnBoard(e: DragEvent,square: BoardSquare): BoardSquare {
+		const {piece , color }: {piece: Piece, color: 'black' | 'white'} = JSON.parse(e.dataTransfer?.getData("application/json") ?? '');
+		square.pieces.unshift({color: color, piece_type: piece.display_name.toLowerCase().replaceAll(' ','') as BoardPiece['piece_type']});
+		return square
+	}
 </script>
 
 <style lang="postcss">
