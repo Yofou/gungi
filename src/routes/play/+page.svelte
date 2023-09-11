@@ -4,16 +4,14 @@
 	<div
 		class="flex flex-col laptop:flex-row gap-y-5 gap-x-6 laptop:gap-x-12 w-full justify-around items-center px-3 tablet:px-8 laptop:px-12"
 	>
-		<div
-			class="grid grid-cols-9 h-fit w-full tablet:w-[unset]"
-		>
+		<div class="grid grid-cols-9 h-fit w-full tablet:w-[unset]">
 			{#each board_state as square, i}
 				{@const top_piece = square.pieces?.[0]}
 				<div
 					role="application"
 					class="bg-[#eecaa0] border-[#bc7e38] border-t tablet:border-t-2 border-r p-1.5 tablet:border-r-2 border-solid tablet:w-16 laptop:w-20 desktop:w-24 aspect-square
 					{i % 9 === 0 && 'border-l tablet:border-l-2'} {i >= 72 && 'border-b tablet:border-b-2'}"
-					on:drop={(e) => square = dropPieceOnBoard(e,square)}
+					on:drop={(e) => (square = dropPieceOnBoard(e, square))}
 					on:dragover={(e) => e.preventDefault()}
 				>
 					{#if top_piece}
@@ -50,12 +48,22 @@
 					>
 						{#each player.piece_data as piece (piece.id)}
 							{@const piece_slug_name = piece.display_name.toLowerCase().replaceAll(' ', '')}
-							<div class="h-12 laptop:h-14 aspect-square cursor-pointer relative" >
+							<div class="h-12 laptop:h-14 aspect-square cursor-pointer relative">
 								<img
 									class="block"
 									draggable="true"
 									src="/img/{player.color}-{piece_slug_name}-1.svg"
-									on:dragstart={(e) => draggedStockpilePiece = stockpileDragStart(e,piece,i)}
+									on:dragstart={(e) => {
+										const {piece: data_of_piece , element} = stockpileDragStart(e,piece, i);
+										draggedStockpilePiece = data_of_piece;
+										draggedStockpilePieceElement?.appendChild(element)
+									}}
+									on:drag={pieceTrackMouse}
+									on:dragend={() => {
+										if (draggedStockpilePieceElement?.firstChild) {
+											draggedStockpilePieceElement?.removeChild(draggedStockpilePieceElement?.firstChild)
+										}
+									}}
 									alt="{player.color}-{piece_slug_name}-1"
 								/>
 								<div
@@ -70,10 +78,12 @@
 			{/each}
 		</div>
 	</div>
+	<div bind:this={draggedStockpilePieceElement} />
 </main>
 
 <script lang="ts">
-	import { piece_data, type BoardSquare, type Piece, type BoardPiece } from '$lib/pieces';
+	import { dropPieceOnBoard, stockpileDragStart } from '$lib/game';
+	import { piece_data, type BoardSquare, type Piece } from '$lib/pieces';
 
 	let board_state: BoardSquare[] = Array.from({ length: 81 }, (_, i) => {
 		return { id: i, pieces: [] };
@@ -92,19 +102,14 @@
 		}
 	];
 
-	
 	let draggedStockpilePiece: Piece | null = null;
-	function stockpileDragStart(e: DragEvent,piece: Piece,player_number: number): Piece {
-		const element = e.target as HTMLElement;
-		e.dataTransfer?.setData("application/json", JSON.stringify({piece , color: player_number === 0 ? 'white' : 'black'}));
-		console.log(piece)
-		return piece;
-	}
+	let draggedStockpilePieceElement: HTMLElement | null = null;
 
-	function dropPieceOnBoard(e: DragEvent,square: BoardSquare): BoardSquare {
-		const {piece , color }: {piece: Piece, color: 'black' | 'white'} = JSON.parse(e.dataTransfer?.getData("application/json") ?? '');
-		square.pieces.unshift({color: color, piece_type: piece.display_name.toLowerCase().replaceAll(' ','') as BoardPiece['piece_type']});
-		return square
+	function pieceTrackMouse() {
+		const element = draggedStockpilePieceElement!;
+		element.style.position = "absolute";
+		// const { img_element }: DragData = JSON.parse(e.dataTransfer?.getData("application/json") ?? '');
+		// console.log(img_element)
 	}
 </script>
 
