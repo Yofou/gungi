@@ -27,10 +27,13 @@
 							<div class="h-12 aspect-square cursor-pointer relative">
 								<img
 									class="h-12 block"
+									draggable="true"
 									src="/img/{player.color}-{piece_name}-1.svg"
 									alt="{player.color}-{piece_name}-1"
 								/>
-								<div class="rounded-full h-7 bg-blue-950 aspect-square flex justify-center items-center absolute -top-3 -right-3" >
+								<div
+									class="rounded-full h-7 bg-blue-950 aspect-square flex justify-center items-center absolute -top-3 -right-3"
+								>
 									{piece.amount}
 								</div>
 							</div>
