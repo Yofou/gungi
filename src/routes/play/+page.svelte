@@ -5,8 +5,8 @@
 		class="flex flex-col laptop:flex-row gap-y-5 gap-x-6 laptop:gap-x-12 w-full justify-around items-center px-3 tablet:px-8 laptop:px-12"
 	>
 		<div class="grid grid-cols-9 h-fit w-full tablet:w-[unset]" 
-		use:dndzone={{ items: board_state }}
-		on:finalize={(e) => handleGameMove(e)}
+		use:dndzone={{ items: board_state, dragDisabled: true }}
+		on:finalize={(e) => board_state = handleGameMove(e)}
 		>
 			{#each board_state as square, i}
 				{@const top_piece = square.pieces?.at(-1)}
@@ -47,7 +47,6 @@
 						class="grid grid-cols-3 tablet:grid-cols-7 laptop:grid-cols-6 desktop:grid-cols-8 gap-4"
 						use:dndzone={{
 							items: Object.values(player.piece_data),
-							type: `stockpile_pieces_${i}`,
 							dropFromOthersDisabled: true,
 							dropTargetClasses: ['!outline-none']
 						}}
@@ -77,29 +76,11 @@
 </main>
 
 <script lang="ts">
-	import { dndzone, TRIGGERS, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
-	import { piece_data, type Piece } from '$lib/pieces';
+	import { dndzone } from 'svelte-dnd-action';
+	import { piece_data, type Piece, type BoardPiece } from '$lib/pieces';
 	import { handleGameMove, handleStockpileDnDConsider } from '$lib/game';
 
-	type BoardPiece = {
-		color: 'white' | 'black';
-		piece_type:
-			| 'marshal(king)'
-			| 'knight'
-			| 'pawn'
-			| 'general'
-			| 'spy'
-			| 'archer'
-			| 'cannon'
-			| 'samurai'
-			| 'musketeer'
-			| 'lieutenantgeneral'
-			| 'majorgeneral'
-			| 'captain'
-			| 'fortress'
-	};
-
-	const board_state: { id: number; pieces: Array<BoardPiece> }[] = Array.from({length: 81}, (_, i) => { return {id: i,pieces: []} })
+	let board_state: { id: number; pieces: Array<BoardPiece> }[] = Array.from({length: 81}, (_, i) => { return {id: i,pieces: []} })
 
 	const player_data = [
 		{

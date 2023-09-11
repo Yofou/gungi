@@ -1,5 +1,5 @@
 import { SHADOW_ITEM_MARKER_PROPERTY_NAME, TRIGGERS } from "svelte-dnd-action";
-import type { Piece } from "./pieces";
+import type { BoardPiece, Piece } from "./pieces";
 
 type PlayerData = {
     name: string;
@@ -7,8 +7,9 @@ type PlayerData = {
     piece_data: Piece[];
 }
 
-export function handleGameMove(e: CustomEvent) {
-
+export function handleGameMove(e: CustomEvent): { id: number; pieces: BoardPiece[]; }[] {
+    console.log(2);
+    return []
 }
 
 let shouldIgnoreDndEvents = false;
