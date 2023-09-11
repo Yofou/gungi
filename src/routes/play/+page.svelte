@@ -6,7 +6,7 @@
 	>
 		<div
 			class="grid grid-cols-9 h-fit w-full tablet:w-[unset]"
-			use:dndzone={{ items: board_state, dragDisabled: true, dropTargetClasses: ['!outline-none'],flipDurationMs: 100 }}
+			use:dndzone={{ items: board_state, dragDisabled: true, dropTargetClasses: ['!outline-none'] }}
 			on:finalize={(e) => (board_state = handleGameMove(e, board_state))}
 		>
 			{#each board_state as square, i}
@@ -49,8 +49,7 @@
 						use:dndzone={{
 							items: Object.values(player.piece_data),
 							dropFromOthersDisabled: true,
-							dropTargetClasses: ['!outline-none'],
-							flipDurationMs: 100
+							dropTargetClasses: ['!outline-none']
 						}}
 						on:consider={(e) => (player_data[i] = handleStockpileDnDConsider(e, player_data[i]))}
 					>
