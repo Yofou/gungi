@@ -1,16 +1,16 @@
 <main
 	class="bg-lime-800 min-w-screen min-h-screen text-white font-primaryfont flex flex-col justify-center items-center gap-y-5"
 >
-	<div class="flex gap-y-5 w-full desktop:px-24 justify-between">
-		<div class="grid grid-cols-9" use:dndzone={{ items: [] }}>
+	<div class="flex gap-y-5 gap-x-6 laptop:gap-x-12 w-full justify-around items-center px-4 tablet:px-8 laptop:px-20">
+		<div class="grid grid-cols-9 h-fit w-full tablet:w-[unset]" use:dndzone={{ items: [] }}>
 			{#each { length: 81 } as _, i}
 				<div
-					class="bg-[#eecaa0] border-[#bc7e38] border-t-2 border-r-2 border-solid h-24 aspect-square
+					class="bg-[#eecaa0] border-[#bc7e38] border-t-2 border-r-2 border-solid tablet:w-16 laptop:w-20 desktop:w-24 aspect-square
 					{i % 9 === 0 && 'border-l-2'} {i >= 72 && 'border-b-2'}"
 				/>
 			{/each}
 		</div>
-		<div class="flex flex-col gap-y-6">
+		<div class:hidden={!toggle_sm_menu} class="flex flex-col gap-y-6 absolute laptop:relative laptop:flex" >
 			<h2 class="font-bold text-4xl">Game Phase</h2>
 			<div class="flex flex-col justify-between rounded-3xl bg-lime-950 text-white py-5 px-8">
 				<h4>Tower details</h4>
@@ -23,7 +23,7 @@
 						<h4>{player.name}'s stockpile</h4>
 					</div>
 					<div
-						class="grid grid-cols-10 gap-4"
+						class="grid grid-cols-3 laptop:grid-cols-6 desktop:grid-cols-8 gap-4"
 						use:dndzone={{
 							items: Object.values(player.piece_data),
 							type: `stockpile_pieces_${i}`,
@@ -58,6 +58,8 @@
 <script lang="ts">
 	import { dndzone, TRIGGERS, SHADOW_ITEM_MARKER_PROPERTY_NAME } from 'svelte-dnd-action';
 	import { piece_data, type Piece } from '$lib/pieces';
+
+	let toggle_sm_menu = false;
 
 	type BoardPiece = {
 		color: 'white' | 'black';
