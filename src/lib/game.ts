@@ -15,6 +15,7 @@ export function stockpileDragStart(e: DragEvent,piece: Piece,player_number: numb
 }
 
 export function dropPieceOnBoard(e: DragEvent,square: BoardSquare): BoardSquare {
+    console.log(2)
     const { piece , color }: DragData = JSON.parse(e.dataTransfer?.getData("application/json") ?? '');
     square.pieces.unshift({color: color, piece_type: piece.display_name.toLowerCase().replaceAll(' ','') as BoardPiece['piece_type']});
     return square

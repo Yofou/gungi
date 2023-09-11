@@ -54,9 +54,9 @@
 									draggable="true"
 									src="/img/{player.color}-{piece_slug_name}-1.svg"
 									on:dragstart={(e) => {
-										const {piece: data_of_piece , element} = stockpileDragStart(e,piece, i);
+										const { piece: data_of_piece, element } = stockpileDragStart(e, piece, i);
 										draggedStockpilePiece = data_of_piece;
-										draggedStockpilePieceElement?.appendChild(element)
+										draggedStockpilePieceElement?.appendChild(element);
 									}}
 									on:drag={pieceTrackMouse}
 									on:dragend={() => {
@@ -105,9 +105,11 @@
 	let draggedStockpilePiece: Piece | null = null;
 	let draggedStockpilePieceElement: HTMLElement | null = null;
 
-	function pieceTrackMouse() {
+	function pieceTrackMouse(e: DragEvent) {
 		const element = draggedStockpilePieceElement!;
-		element.style.position = "absolute";
+		element.classList.add('dragged_ghost');
+		element.style.left = `${e.clientX}px`;
+		element.style.top = `${e.clientY}px`;
 		// const { img_element }: DragData = JSON.parse(e.dataTransfer?.getData("application/json") ?? '');
 		// console.log(img_element)
 	}
@@ -116,6 +118,13 @@
 <style lang="postcss">
 	h4 {
 		@apply text-xl font-semibold;
+	}
+
+	.dragged_ghost {
+		@apply absolute pointer-events-none;
+		& > img {
+			@apply h-12 laptop:h-14;
+		}
 	}
 
 	:global(#dnd-action-dragged-el > .number_img) {
